@@ -167,12 +167,19 @@ export const useSelectedRail = (
     const {low, high, min, max} = inPropsRef.current;
     const {current: containerWidth} = containerWidthRef;
     const fullScale = (max - min) / (containerWidth - thumbWidth);
-    const leftValue = (low - min) / fullScale;
-    const rightValue = (max - high) / fullScale;
-    left.setValue(disableRange ? 0 : leftValue);
-    right.setValue(
-      disableRange ? containerWidth - thumbWidth - leftValue : rightValue,
-    );
+    let leftValue = (low - min) / fullScale;
+    let rightValue = (max - high) / fullScale;
+    leftValue = disableRange ? 0 : leftValue;
+    rightValue = disableRange ? containerWidth - thumbWidth - leftValue : rightValue;
+
+    if ((containerWidth - thumbWidth - rightValue) < leftValue) {
+      const oldLeft = leftValue;
+      leftValue = containerWidth - thumbWidth - rightValue;
+      rightValue = containerWidth - thumbWidth - oldLeft;
+    }
+
+    left.setValue(leftValue);
+    right.setValue(rightValue);
   }, [inPropsRef, containerWidthRef, disableRange, thumbWidth, left, right]);
   const styles = useMemo(
     () => ({
