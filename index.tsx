@@ -40,6 +40,7 @@ export interface SliderProps extends ViewProps {
   allowLabelOverflow?: boolean;
   disableRange?: boolean;
   disabled?: boolean;
+  reversible: boolean;
   floatingLabel?: boolean;
   renderLabel?: (value: number) => ReactNode;
   renderNotch?: (value: number) => ReactNode;
@@ -61,6 +62,7 @@ const Slider: React.FC<SliderProps> = ({
   allowLabelOverflow = false,
   disableRange = false,
   disabled = false,
+  reversible = false,
   onValueChanged,
   onSliderTouchStart,
   onSliderTouchEnd,
@@ -230,8 +232,8 @@ const Slider: React.FC<SliderProps> = ({
 
           const handlePositionChange = (positionInView: number) => {
             const {low, high, min, max, step} = inPropsRef.current;
-            const minValue = isLow ? min : low + minRange;
-            const maxValue = isLow ? high - minRange : max;
+            const minValue = (reversible || isLow) ? min : low + minRange;
+            const maxValue = (!reversible && isLow) ? high - minRange : max;
             const value = clamp(
               getValueForPosition(
                 positionInView,
